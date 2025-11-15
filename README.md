@@ -2,6 +2,9 @@
 
 **Darna Navigator** is an interactive tourism web platform that helps users explore Tunisia’s cities, culture, gastronomy, and events. It provides city guides, upcoming events, and culinary experiences in an intuitive and responsive interface.
 
+<img width="1898" height="858" alt="image" src="https://github.com/user-attachments/assets/98ac2cae-6f67-4bdc-9bff-9f39104882f0" />
+
+
 ---
 
 ## 🌟 Features
