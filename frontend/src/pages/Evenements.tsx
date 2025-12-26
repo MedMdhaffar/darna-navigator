@@ -1,5 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
 import { Calendar, Filter } from "lucide-react";
-import { useState } from "react";
 import EventCard from "@/components/EventCard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -12,71 +12,83 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+interface EventItem {
+  id: number;
+  title: string;
+  date: string;
+  short_description: string;
+  location: number;
+  location_name: string;
+}
+
+interface EventViewModel {
+  id: number;
+  title: string;
+  date: string;
+  location: string;
+  description: string;
+  cityKey: string;
+  monthKey: string;
+}
+
 const Evenements = () => {
+  const [events, setEvents] = useState<EventViewModel[]>([]);
   const [filterCity, setFilterCity] = useState<string>("all");
   const [filterMonth, setFilterMonth] = useState<string>("all");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const events = [
-    {
-      title: "Festival International de Carthage",
-      date: "15-25 Juillet 2024",
-      location: "Carthage, Tunis",
-      description: "Le plus prestigieux festival culturel de Tunisie avec concerts et spectacles",
-      city: "tunis",
-      month: "juillet",
-    },
-    {
-      title: "Festival du Sahara",
-      date: "20-23 Décembre 2024",
-      location: "Douz",
-      description: "Célébration des traditions sahariennes avec courses de dromadaires et folklore",
-      city: "douz",
-      month: "decembre",
-    },
-    {
-      title: "Festival International de Hammamet",
-      date: "10-20 Août 2024",
-      location: "Hammamet",
-      description: "Festival d'arts et de musique dans le cadre enchanteur de Hammamet",
-      city: "hammamet",
-      month: "aout",
-    },
-    {
-      title: "Festival de Jazz de Tabarka",
-      date: "5-12 Juillet 2024",
-      location: "Tabarka",
-      description: "Rencontres jazz internationales dans un cadre naturel exceptionnel",
-      city: "tabarka",
-      month: "juillet",
-    },
-    {
-      title: "Festival Ulysses de Djerba",
-      date: "1-7 Juin 2024",
-      location: "Djerba",
-      description: "Arts de la rue, spectacles vivants et concerts sur l'île de Djerba",
-      city: "djerba",
-      month: "juin",
-    },
-    {
-      title: "Festival International de Sousse",
-      date: "15-30 Juillet 2024",
-      location: "Sousse",
-      description: "Musique, théâtre et folklore dans la médina de Sousse",
-      city: "sousse",
-      month: "juillet",
-    },
-  ];
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/events")
+      .then((res) => {
+        if (!res.ok) throw new Error("Impossible de récupérer les événements");
+        return res.json();
+      })
+      .then((data: EventItem[]) => {
+        const mapped = data.map((item) => {
+          const dateObj = new Date(item.date);
+          const monthKey = dateObj.toString() === "Invalid Date"
+            ? ""
+            : dateObj.toLocaleString("fr-FR", { month: "long" }).toLowerCase();
+          const dateLabel = dateObj.toString() === "Invalid Date"
+            ? item.date
+            : dateObj.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+
+          return {
+            id: item.id,
+            title: item.title,
+            date: dateLabel,
+            location: item.location_name,
+            description: item.short_description,
+            cityKey: item.location_name?.toLowerCase() || "",
+            monthKey,
+          } as EventViewModel;
+        });
+        setEvents(mapped);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Une erreur est survenue lors du chargement des événements.");
+        setLoading(false);
+      });
+  }, []);
+
+  const cityOptions = useMemo(() => {
+    const names = Array.from(new Set(events.map((e) => e.cityKey).filter(Boolean)));
+    return names;
+  }, [events]);
 
   const filteredEvents = events.filter((event) => {
-    const cityMatch = filterCity === "all" || event.city === filterCity;
-    const monthMatch = filterMonth === "all" || event.month === filterMonth;
+    const cityMatch = filterCity === "all" || event.cityKey === filterCity;
+    const monthMatch = filterMonth === "all" || event.monthKey === filterMonth;
     return cityMatch && monthMatch;
   });
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1">
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-secondary to-secondary/80 text-secondary-foreground py-20">
@@ -99,7 +111,7 @@ const Evenements = () => {
                 <Filter className="h-5 w-5 text-muted-foreground" />
                 <span className="font-medium">Filtrer par :</span>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                 <Select value={filterCity} onValueChange={setFilterCity}>
                   <SelectTrigger className="w-full sm:w-[200px]">
@@ -107,12 +119,11 @@ const Evenements = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Toutes les villes</SelectItem>
-                    <SelectItem value="tunis">Tunis</SelectItem>
-                    <SelectItem value="djerba">Djerba</SelectItem>
-                    <SelectItem value="sousse">Sousse</SelectItem>
-                    <SelectItem value="hammamet">Hammamet</SelectItem>
-                    <SelectItem value="tabarka">Tabarka</SelectItem>
-                    <SelectItem value="douz">Douz</SelectItem>
+                    {cityOptions.map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city.charAt(0).toUpperCase() + city.slice(1)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
 
@@ -122,10 +133,11 @@ const Evenements = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tous les mois</SelectItem>
-                    <SelectItem value="juin">Juin</SelectItem>
-                    <SelectItem value="juillet">Juillet</SelectItem>
-                    <SelectItem value="aout">Août</SelectItem>
-                    <SelectItem value="decembre">Décembre</SelectItem>
+                    {Array.from(new Set(events.map((e) => e.monthKey).filter(Boolean))).map((month) => (
+                      <SelectItem key={month} value={month}>
+                        {month.charAt(0).toUpperCase() + month.slice(1)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
 
@@ -148,18 +160,37 @@ const Evenements = () => {
         {/* Events Grid */}
         <section className="py-20">
           <div className="container">
-            {filteredEvents.length > 0 ? (
+            {loading && (
+              <p className="text-center text-lg">Chargement des événements...</p>
+            )}
+
+            {error && !loading && (
+              <div className="text-center py-10 text-destructive text-lg">
+                {error}
+              </div>
+            )}
+
+            {!loading && !error && filteredEvents.length > 0 ? (
               <>
                 <p className="text-muted-foreground mb-8">
                   {filteredEvents.length} événement{filteredEvents.length > 1 ? 's' : ''} trouvé{filteredEvents.length > 1 ? 's' : ''}
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredEvents.map((event) => (
-                    <EventCard key={event.title} {...event} />
+                    <EventCard
+                      key={event.id}
+                      id={event.id}
+                      title={event.title}
+                      date={event.date}
+                      location={event.location}
+                      description={event.description}
+                    />
                   ))}
                 </div>
               </>
-            ) : (
+            ) : null}
+
+            {!loading && !error && filteredEvents.length === 0 && (
               <div className="text-center py-20">
                 <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
                 <h3 className="text-xl font-semibold mb-2">Aucun événement trouvé</h3>

@@ -1,11 +1,7 @@
-# gastronomie/admin.py
 from django.contrib import admin
-from .models import Destination, Plate
+from .models import Plate
 
 @admin.register(Plate)
 class PlateAdmin(admin.ModelAdmin):
-    list_display = ('name', 'destination')
-    list_filter = ('destination',)
-    search_fields = ('name',)
-
-admin.site.register(Destination)
+    list_display = ("name",)
+    search_fields = ("name", "definition")

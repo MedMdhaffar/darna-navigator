@@ -3,20 +3,27 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { addPlateToFavorites } from "@/lib/preferencesService";
 
 interface DishCardProps {
+  id: number;
   name: string;
   image: string;
   description: string;
   restaurant?: string;
 }
 
-const DishCard = ({ name, image, description, restaurant }: DishCardProps) => {
+const DishCard = ({ id, name, image, description, restaurant }: DishCardProps) => {
   const navigate = useNavigate();
 
-  const handleAddToFavorites = () => {
-    toast.success(`${name} ajouté aux favoris`);
-    setTimeout(() => navigate("/profil"), 1000);
+  const handleAddToFavorites = async () => {
+    const success = await addPlateToFavorites(id);
+    if (success) {
+      toast.success(`${name} ajouté aux favoris`);
+      setTimeout(() => navigate("/profil"), 1000);
+    } else {
+      toast.error("Erreur lors de l'ajout aux favoris");
+    }
   };
 
   return (

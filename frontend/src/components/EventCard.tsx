@@ -3,8 +3,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { addEventToAttending } from "@/lib/preferencesService";
 
 interface EventCardProps {
+  id: number;
   title: string;
   date: string;
   location: string;
@@ -12,12 +14,17 @@ interface EventCardProps {
   image?: string;
 }
 
-const EventCard = ({ title, date, location, description, image }: EventCardProps) => {
+const EventCard = ({ id, title, date, location, description, image }: EventCardProps) => {
   const navigate = useNavigate();
 
-  const handleJoinEvent = () => {
-    toast.success(`Vous participez à : ${title}`);
-    setTimeout(() => navigate("/profil"), 1000);
+  const handleJoinEvent = async () => {
+    const success = await addEventToAttending(id);
+    if (success) {
+      toast.success(`Vous participez à : ${title}`);
+      setTimeout(() => navigate("/profil"), 1000);
+    } else {
+      toast.error("Erreur lors de l'ajout à vos événements");
+    }
   };
 
   return (

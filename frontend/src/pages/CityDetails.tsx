@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { addDestinationToFavorites } from "@/lib/preferencesService";
 
 interface Place {
     id: number;
@@ -49,10 +50,15 @@ const CityDetails = () => {
             });
     }, [id]);
 
-    const handleAddToFavorites = () => {
+    const handleAddToFavorites = async () => {
         if (city) {
-            toast.success(`${city.name} ajoutée à vos favoris !`);
-            setTimeout(() => navigate("/profil"), 1000);
+            const success = await addDestinationToFavorites(city.id);
+            if (success) {
+                toast.success(`${city.name} ajoutée à vos favoris !`);
+                setTimeout(() => navigate("/profil"), 1000);
+            } else {
+                toast.error("Erreur lors de l'ajout aux favoris");
+            }
         }
     };
 

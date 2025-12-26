@@ -1,54 +1,50 @@
+import { useEffect, useState } from "react";
 import { UtensilsCrossed } from "lucide-react";
 import DishCard from "@/components/DishCard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import couscousImage from "@/assets/couscous.jpg";
-import brikImage from "@/assets/brik.jpg";
+
+interface Plate {
+  id: number;
+  name: string;
+  image: string;
+  description: string;
+  restaurant?: string;
+}
 
 const Gastronomie = () => {
-  const dishes = [
-    {
-      name: "Couscous",
-      image: couscousImage,
-      description: "Le plat national tunisien, semoule fine accompagnée de légumes et viande mijotés aux épices.",
-      restaurant: "Restaurant Dar El Jeld, Tunis",
-    },
-    {
-      name: "Brik à l'œuf",
-      image: brikImage,
-      description: "Feuille de brick croustillante farcie d'un œuf, thon, câpres et persil.",
-      restaurant: "Chez Slah, La Marsa",
-    },
-    {
-      name: "Lablabi",
-      image: "/Tunisian-Lablebi-1024x1008 (1).jpeg",
-      description: "Soupe de pois chiches relevée d'harissa, servie avec du pain rassis.",
-      restaurant: "Lablabi de Driss, Tunis",
-    },
-    {
-      name: "Mechouia",
-      image: "/mechouia_tunisienne.webp",
-      description: "Salade de légumes grillés (poivrons, tomates, oignons) avec thon et câpres.",
-      restaurant: "Le Baroque, Sidi Bou Said",
-    },
-    {
-      name: "Ojja aux fruits de mer",
-      image: "/25df3cb75657324a5f3a34ea6018eda1.png",
-      description: "Ragoût épicé de fruits de mer aux tomates et piments, servi avec du pain.",
-      restaurant: "La Goulette, Tunis",
-    },
-    {
-      name: "Makroudh",
-      image: "/Original_3996_makroudhs-patisseries-dattes-tunisie_0.avif",
-      description: "Pâtisserie traditionnelle aux dattes et miel, parfumée à la fleur d'oranger.",
-      restaurant: "Pâtisserie Ben Yedder, Kairouan",
-    },
-  ];
+  const [dishes, setDishes] = useState<Plate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/gastronomie/plates/")
+      .then((res) => {
+        if (!res.ok) throw new Error("Impossible de récupérer les plats");
+        return res.json();
+      })
+      .then((data) => {
+        const mapped: Plate[] = data.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          image: item.image,
+          description: item.definition,
+          restaurant: item.restaurants,
+        }));
+        setDishes(mapped);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Une erreur est survenue lors du chargement des plats.");
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1">
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-accent to-accent-dark text-accent-foreground py-20">
@@ -68,10 +64,10 @@ const Gastronomie = () => {
           <div className="container max-w-4xl">
             <div className="prose prose-lg mx-auto text-center">
               <p className="text-lg text-muted-foreground">
-                La cuisine tunisienne est un savoureux mélange d'influences berbères, arabes, 
-                turques, italiennes et françaises. Généreuse en saveurs et en couleurs, elle fait 
-                la part belle aux épices (cumin, carvi, coriandre, harissa), à l'huile d'olive, 
-                aux légumes frais et aux produits de la mer.
+                La cuisine tunisienne est un savoureux mélange d'influences berbères, arabes, turques,
+                italiennes et françaises. Généreuse en saveurs et en couleurs, elle fait la part belle
+                aux épices (cumin, carvi, coriandre, harissa), à l'huile d'olive, aux légumes frais et
+                aux produits de la mer.
               </p>
             </div>
           </div>
@@ -81,11 +77,33 @@ const Gastronomie = () => {
         <section className="py-20">
           <div className="container">
             <h2 className="text-3xl font-bold mb-12 text-center">Plats Typiques & Restaurants</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {dishes.map((dish) => (
-                <DishCard key={dish.name} {...dish} />
-              ))}
-            </div>
+
+            {loading && (
+              <p className="text-center text-lg">Chargement des plats...</p>
+            )}
+
+            {error && !loading && (
+              <p className="text-center text-lg text-destructive">{error}</p>
+            )}
+
+            {!loading && !error && dishes.length === 0 && (
+              <p className="text-center text-lg">Aucun plat trouvé pour le moment.</p>
+            )}
+
+            {!loading && !error && dishes.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {dishes.map((dish) => (
+                  <DishCard
+                    key={dish.id}
+                    id={dish.id}
+                    name={dish.name}
+                    image={dish.image}
+                    description={dish.description}
+                    restaurant={dish.restaurant}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </section>
 

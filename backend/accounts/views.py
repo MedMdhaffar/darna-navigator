@@ -6,7 +6,12 @@ from django.core.cache import cache
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 from .serializers import SignupSerializer, MyTokenObtainPairSerializer
+from cities.models import City
+from gastronomie.models import Plate
+from events.models import Event
 import secrets
+import ListAPIView
+
 
 
 @api_view(['POST'])
@@ -90,3 +95,47 @@ def signin(request):
         "message": "Login successful",
         "tokens": serializer.validated_data,
     }, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def update_preferences(request):
+    """Replace the user's favorites/attendance lists with provided ids."""
+    username = request.data.get('username')
+    if not username:
+        return Response({"error": "username is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = get_user_model().objects.get(username=username)
+    except get_user_model().DoesNotExist:
+        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    plate_ids = request.data.get('plate_ids')
+    destination_ids = request.data.get('destination_ids')
+    event_ids = request.data.get('event_ids')
+
+    if plate_ids is None and destination_ids is None and event_ids is None:
+        return Response({"error": "Provide at least one of plate_ids, destination_ids, or event_ids."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if plate_ids is not None:
+        plates = Plate.objects.filter(id__in=plate_ids)
+        user.favorite_plates.set(plates)
+
+    if destination_ids is not None:
+        destinations = City.objects.filter(id__in=destination_ids)
+        user.favorite_destinations.set(destinations)
+
+    if event_ids is not None:
+        events = Event.objects.filter(id__in=event_ids)
+        user.attending_events.set(events)
+
+    user.save()
+
+    return Response({
+        "favorite_plates": list(user.favorite_plates.values_list('id', flat=True)),
+        "favorite_destinations": list(user.favorite_destinations.values_list('id', flat=True)),
+        "attending_events": list(user.attending_events.values_list('id', flat=True)),
+    }, status=status.HTTP_200_OK)
+
+class userListView(ListAPIView):
+    queryset = User.objects.all()
+  

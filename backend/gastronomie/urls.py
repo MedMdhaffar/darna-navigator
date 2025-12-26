@@ -1,10 +1,7 @@
 # gastronomie/urls.py
 from django.urls import path
-from .views import PlatesByDestinationView
+from .views import PlateListView
 
 urlpatterns = [
-    path(
-        'destinations/<int:destination_id>/plates/',
-        PlatesByDestinationView.as_view()
-    ),
+    path("plates/", PlateListView.as_view(), name="plates-list"),
 ]
