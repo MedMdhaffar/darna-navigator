@@ -1,57 +1,28 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, UtensilsCrossed, Calendar, MapPin } from "lucide-react";
-import CityCard from "@/components/CityCard";
-import EventCard from "@/components/EventCard";
+import {
+  ArrowRight,
+  UtensilsCrossed,
+  Calendar,
+  MapPin,
+} from "lucide-react";
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CityCard from "@/components/CityCard";
+
 import heroImage from "@/assets/hero-tunisia.jpg";
 import tunisImage from "@/assets/tunis.jpg";
 import sousseImage from "@/assets/sousse.jpg";
 import djerbaImage from "@/assets/djerba.jpg";
 
 const Home = () => {
-  const featuredCities = [
-    {
-      name: "Djerba",
-      image: djerbaImage,
-      description: "L'île aux mille palmiers et ses plages de rêve",
-      slug: "djerba",
-    },
-    {
-      name: "Tunis",
-      image: tunisImage,
-      description: "La capitale vibrante entre tradition et modernité",
-      slug: "tunis",
-    },
-    {
-      name: "Sousse",
-      image: sousseImage,
-      description: "La perle du Sahel et ses médinas historiques",
-      slug: "sousse",
-    },
-  ];
-
-  const upcomingEvents = [
-    {
-      title: "Festival International de Carthage",
-      date: "15-25 Juillet 2024",
-      location: "Carthage, Tunis",
-      description: "Le plus grand festival culturel de Tunisie",
-    },
-    {
-      title: "Festival du Sahara",
-      date: "20-23 Décembre 2024",
-      location: "Douz",
-      description: "Célébration de la culture saharienne",
-    },
-  ];
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1">
+        {/* ================= HERO SECTION ================= */}
         <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0">
             <img
@@ -59,11 +30,11 @@ const Home = () => {
               alt="Tunisia"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-background" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-background" />
           </div>
-          
+
           <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">
               Bienvenue chez vous en Tunisie
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-white/90">
@@ -78,96 +49,101 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Featured Cities */}
+        {/* ================= VIDEO SECTION ================= */}
         <section className="py-20 bg-muted/30">
+          <div className="container max-w-5xl text-center">
+            <h2 className="text-3xl font-bold mb-6">
+              Vivez l’expérience tunisienne
+            </h2>
+            <p className="text-muted-foreground mb-10 max-w-2xl mx-auto">
+              Plongez au cœur de la Tunisie à travers ses paysages, sa culture
+              et son art de vivre.
+            </p>
+
+            <div className="relative aspect-video rounded-xl overflow-hidden shadow-xl">
+              <iframe
+                src="https://www.youtube.com/embed/DMAaLIIRB38?si=a2TeMCxfAgRlpemv"
+                title="Tunisia Travel Video"
+                className="absolute inset-0 w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ================= DESTINATIONS PREVIEW ================= */}
+        <section className="py-20">
           <div className="container">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold mb-4">Villes à découvrir</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Des destinations authentiques qui vous feront vivre l'âme de la Tunisie
+              <h2 className="text-3xl font-bold mb-4">
+                Destinations incontournables
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Des villes chargées d’histoire aux îles paradisiaques,
+                explorez la diversité tunisienne.
               </p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-              {featuredCities.map((city) => (
-                <CityCard key={city.slug} {...city} />
-              ))}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <CityCard
+                name="Tunis"
+                image={tunisImage}
+                description="Capitale vibrante mêlant histoire et modernité."
+                id={1}
+              />
+              <CityCard
+                name="Sousse"
+                image={sousseImage}
+                description="La perle du Sahel et ses plages dorées."
+                id={2}
+              />
+              <CityCard
+                name="Djerba"
+                image={djerbaImage}
+                description="Île méditerranéenne aux mille palmiers."
+                id={3}
+              />
             </div>
 
-            <div className="text-center">
+            <div className="text-center mt-12">
               <Link to="/destinations">
                 <Button variant="outline" size="lg">
                   Voir toutes les destinations
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Gastronomie Preview */}
-        <section className="py-20">
-          <div className="container">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <div className="inline-flex items-center justify-center p-3 bg-accent rounded-full mb-6">
-                  <UtensilsCrossed className="h-6 w-6 text-accent-foreground" />
-                </div>
-                <h2 className="text-4xl font-bold mb-6">Saveurs de la Tunisie</h2>
-                <p className="text-lg text-muted-foreground mb-6">
-                  Découvrez une cuisine riche en saveurs, où les épices méditerranéennes 
-                  rencontrent les traditions culinaires ancestrales. Du couscous parfumé 
-                  aux pâtisseries au miel, chaque plat raconte une histoire.
-                </p>
-                <Link to="/gastronomie">
-                  <Button size="lg">
-                    Découvrir la gastronomie
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <img
-                  src="/mechouia_tunisienne.webp"
-                  alt="Cuisine tunisienne"
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-                <img
-                  src="/Original_3996_makroudhs-patisseries-dattes-tunisie_0.avif"
-                  alt="Pâtisserie tunisienne"
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Upcoming Events */}
+        {/* ================= EXPERIENCE SECTION ================= */}
         <section className="py-20 bg-muted/30">
           <div className="container">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center justify-center p-3 bg-secondary/10 rounded-full mb-6">
-                <Calendar className="h-6 w-6 text-secondary" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+              <div className="p-6">
+                <UtensilsCrossed className="h-10 w-10 mx-auto mb-4 text-primary" />
+                <h3 className="text-xl font-semibold mb-2">Gastronomie</h3>
+                <p className="text-muted-foreground">
+                  Saveurs authentiques, recettes ancestrales et produits du terroir.
+                </p>
               </div>
-              <h2 className="text-4xl font-bold mb-4">Événements à venir</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Participez aux festivals et événements qui célèbrent la culture tunisienne
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              {upcomingEvents.map((event) => (
-                <EventCard key={event.title} {...event} />
-              ))}
-            </div>
 
-            <div className="text-center">
-              <Link to="/evenements">
-                <Button variant="outline" size="lg">
-                  Voir tous les événements
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
+              <div className="p-6">
+                <Calendar className="h-10 w-10 mx-auto mb-4 text-primary" />
+                <h3 className="text-xl font-semibold mb-2">Événements</h3>
+                <p className="text-muted-foreground">
+                  Festivals, traditions et rendez-vous culturels toute l’année.
+                </p>
+              </div>
+
+              <div className="p-6">
+                <MapPin className="h-10 w-10 mx-auto mb-4 text-primary" />
+                <h3 className="text-xl font-semibold mb-2">Patrimoine</h3>
+                <p className="text-muted-foreground">
+                  Sites antiques, médinas classées et trésors historiques.
+                </p>
+              </div>
             </div>
           </div>
         </section>

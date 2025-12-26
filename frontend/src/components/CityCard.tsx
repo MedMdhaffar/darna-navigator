@@ -6,17 +6,17 @@ interface CityCardProps {
   name: string;
   image: string;
   description: string;
-  slug: string;
+  id: number;
 }
 
-const CityCard = ({ name, image, description, slug }: CityCardProps) => {
+const CityCard = ({ name, image, description, id }: CityCardProps) => {
   return (
-    <Link to={`/destinations/${slug}`}>
+    <Link to={`/cities/${id}`}>
       <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
         <div className="relative h-48 overflow-hidden">
           <img
-            src={image}
-            alt={name}
+            src={city.image}
+            alt={city.name}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
