@@ -5,6 +5,12 @@ from .models import User
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'favorite_plates', 'favorite_destinations', 'attending_events']
+
+
 class SignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     

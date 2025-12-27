@@ -5,12 +5,12 @@ from django.core.mail import send_mail
 from django.core.cache import cache
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
-from .serializers import SignupSerializer, MyTokenObtainPairSerializer
+from .serializers import SignupSerializer, MyTokenObtainPairSerializer, UserSerializer
 from cities.models import City
 from gastronomie.models import Plate
 from events.models import Event
+from rest_framework.generics import ListAPIView
 import secrets
-import ListAPIView
 
 
 
@@ -136,6 +136,62 @@ def update_preferences(request):
         "attending_events": list(user.attending_events.values_list('id', flat=True)),
     }, status=status.HTTP_200_OK)
 
+
+@api_view(['POST'])
+def update_favorite(request):
+    """Add or remove a favorite plate, city, or event for the user."""
+    username = request.data.get('username')
+    item_type = request.data.get('type')  # 'plate', 'city', 'event'
+    item_id = request.data.get('id')
+    action = request.data.get('action')  # 'add' or 'remove'
+
+    if not all([username, item_type, item_id, action]):
+        return Response({"error": "username, type, id, and action are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if action not in ['add', 'remove']:
+        return Response({"error": "action must be 'add' or 'remove'."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if item_type not in ['plate', 'city', 'event']:
+        return Response({"error": "type must be 'plate', 'city', or 'event'."}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = get_user_model().objects.get(username=username)
+    except get_user_model().DoesNotExist:
+        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        if item_type == 'plate':
+            item = Plate.objects.get(id=item_id)
+            if action == 'add':
+                user.favorite_plates.add(item)
+            else:
+                user.favorite_plates.remove(item)
+        elif item_type == 'city':
+            item = City.objects.get(id=item_id)
+            if action == 'add':
+                user.favorite_destinations.add(item)
+            else:
+                user.favorite_destinations.remove(item)
+        elif item_type == 'event':
+            item = Event.objects.get(id=item_id)
+            if action == 'add':
+                user.attending_events.add(item)
+            else:
+                user.attending_events.remove(item)
+    except (Plate.DoesNotExist, City.DoesNotExist, Event.DoesNotExist):
+        return Response({"error": f"{item_type} with id {item_id} not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    user.save()
+
+    return Response({
+        "message": f"{item_type} {action}ed successfully.",
+        "favorite_plates": list(user.favorite_plates.values_list('id', flat=True)),
+        "favorite_destinations": list(user.favorite_destinations.values_list('id', flat=True)),
+        "attending_events": list(user.attending_events.values_list('id', flat=True)),
+    }, status=status.HTTP_200_OK)
+
+
 class userListView(ListAPIView):
-    queryset = User.objects.all()
+    queryset = get_user_model().objects.all()
+    serializer_class = UserSerializer
   

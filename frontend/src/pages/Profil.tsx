@@ -14,31 +14,27 @@ const Profil = () => {
   const location = useLocation();
   const profileUser = location.state?.profileUser;
   const [user, setUser] = useState<any>(null);
-
-  // ✅ Add these arrays
-  const favorites = [
-    { type: "destination", name: "Djerba", slug: "djerba" },
-    { type: "dish", name: "Couscous" },
-  ];
-
-  const events = [
-    { name: "Festival International de Carthage", date: "15-25 Juillet 2024" },
-  ];
+  const [favorites, setFavorites] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedTokens = localStorage.getItem("authTokens");
 
     if (!storedTokens && !profileUser) {
       navigate("/login");
+      setLoading(false);
       return;
     }
 
     if (profileUser) {
       setUser({
+        id: profileUser.id,
         username: profileUser.username,
         email: profileUser.email,
         memberSince: "Mars 2024",
       });
+      setLoading(false);
       return;
     }
 
@@ -48,18 +44,58 @@ const Profil = () => {
         const decoded = JSON.parse(atob(parsedTokens.access.split(".")[1]));
 
         setUser({
+          id: decoded.user_id,
           username: decoded.username,
           email: decoded.email,
           memberSince: "Mars 2024",
         });
+        setLoading(false);
       } catch (err) {
         console.error("Invalid token", err);
         navigate("/login");
+        setLoading(false);
       }
     }
   }, [profileUser, navigate]);  
 
-  if (!user) return null;
+  useEffect(() => {
+    if (!user) return;
+
+    fetch('http://localhost:8000/accounts/users/')
+      .then(res => res.json())
+      .then(users => {
+        const currentUser = users.find(u => u.username === user.username);
+        console.log('Current user data:', currentUser);  // Debug log
+        if (currentUser) {
+          const platePromises = currentUser.favorite_plates.map(id => 
+            fetch(`http://localhost:8000/gastronomie/plates/${id}`).then(r => r.json())
+          );
+          const destPromises = currentUser.favorite_destinations.map(id => 
+            fetch(`http://localhost:8000/cities/cities/${id}`).then(r => r.json())
+          );
+          const eventPromises = currentUser.attending_events.map(id => 
+            fetch(`http://localhost:8000/events/${id}`)
+          .then(r => {
+          console.log(r);  // Now r is accessible here
+          return r.json();
+          })
+          );
+
+          Promise.all([...platePromises, ...destPromises]).then(results => {
+            const plates = results.slice(0, platePromises.length).map(p => ({ type: 'dish', name: p.name }));
+            const dests = results.slice(platePromises.length).map(d => ({ type: 'destination', name: d.name, slug: d.name.toLowerCase() }));
+            setFavorites([...plates, ...dests]);
+          });
+
+          Promise.all(eventPromises).then(eventsData => {
+            setEvents(eventsData.map(e => ({ name: e.title, date: e.date })));
+          });
+        }
+      })
+      .catch(err => console.error('Error fetching user data:', err));
+  }, [user]);
+
+  if (loading || !user) return null;
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -133,7 +169,7 @@ const Profil = () => {
                               <Heart className="h-5 w-5 fill-secondary text-secondary" />
                               <span className="font-medium">{fav.name}</span>
                             </div>
-                            <Link to={`/destinations/${fav.slug}`}>
+                            <Link to={`/destinations/`}>
                               <Button variant="ghost" size="sm">
                                 Voir
                               </Button>

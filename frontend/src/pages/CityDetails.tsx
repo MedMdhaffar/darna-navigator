@@ -6,7 +6,6 @@ import Footer from "@/components/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { addDestinationToFavorites } from "@/lib/preferencesService";
 
 interface Place {
     id: number;
@@ -51,14 +50,40 @@ const CityDetails = () => {
     }, [id]);
 
     const handleAddToFavorites = async () => {
-        if (city) {
-            const success = await addDestinationToFavorites(city.id);
-            if (success) {
+        const storedTokens = localStorage.getItem("authTokens");
+        if (!storedTokens) {
+            toast.error("Vous devez être connecté");
+            return;
+        }
+        const parsedTokens = JSON.parse(storedTokens);
+        const decoded = JSON.parse(atob(parsedTokens.access.split(".")[1]));
+        const username = decoded.username;
+
+        const payload = {
+            username,
+            type: "city",
+            id: city.id,
+            action: "add"
+        };
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/accounts/favorite/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${parsedTokens.access}`
+                },
+                body: JSON.stringify(payload)
+            });
+            if (response.ok) {
                 toast.success(`${city.name} ajoutée à vos favoris !`);
                 setTimeout(() => navigate("/profil"), 1000);
             } else {
                 toast.error("Erreur lors de l'ajout aux favoris");
             }
+        } catch (err) {
+            console.error(err);
+            toast.error("Erreur lors de l'ajout aux favoris");
         }
     };
 

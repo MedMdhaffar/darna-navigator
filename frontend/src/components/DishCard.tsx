@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { addPlateToFavorites } from "@/lib/preferencesService";
 
 interface DishCardProps {
   id: number;
@@ -17,11 +16,37 @@ const DishCard = ({ id, name, image, description, restaurant }: DishCardProps) =
   const navigate = useNavigate();
 
   const handleAddToFavorites = async () => {
-    const success = await addPlateToFavorites(id);
-    if (success) {
-      toast.success(`${name} ajouté aux favoris`);
-      setTimeout(() => navigate("/profil"), 1000);
-    } else {
+    const storedTokens = localStorage.getItem("authTokens");
+    if (!storedTokens) {
+      toast.error("Vous devez être connecté");
+      return;
+    }
+    const parsedTokens = JSON.parse(storedTokens);
+    const decoded = JSON.parse(atob(parsedTokens.access.split(".")[1]));
+    const username = decoded.username;
+
+    const payload = {
+      username,
+      type: "plate",
+      id: id,
+      action: "add"
+    };
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/accounts/favorite/', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      console.log('Add to favorites response:', response); // Debug log
+      if (response.ok) {
+        toast.success(`${name} ajouté aux favoris`);
+        setTimeout(() => navigate("/profil"), 1000);
+      } else {
+        toast.error("Erreur lors de l'ajout aux favoris");
+      }
+    } catch (err) {
+      console.error(err);
       toast.error("Erreur lors de l'ajout aux favoris");
     }
   };

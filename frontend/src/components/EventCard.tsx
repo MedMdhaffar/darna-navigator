@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { addEventToAttending } from "@/lib/preferencesService";
 
 interface EventCardProps {
   id: number;
@@ -18,11 +17,36 @@ const EventCard = ({ id, title, date, location, description, image }: EventCardP
   const navigate = useNavigate();
 
   const handleJoinEvent = async () => {
-    const success = await addEventToAttending(id);
-    if (success) {
-      toast.success(`Vous participez à : ${title}`);
-      setTimeout(() => navigate("/profil"), 1000);
-    } else {
+    const storedTokens = localStorage.getItem("authTokens");
+    if (!storedTokens) {
+      toast.error("Vous devez être connecté");
+      return;
+    }
+    const parsedTokens = JSON.parse(storedTokens);
+    const decoded = JSON.parse(atob(parsedTokens.access.split(".")[1]));
+    const username = decoded.username;
+
+    const payload = {
+      username,
+      type: "event",
+      id: id,
+      action: "add"
+    };
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/accounts/favorite/', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (response.ok) {
+        toast.success(`Vous participez à : ${title}`);
+        setTimeout(() => navigate("/profil"), 1000);
+      } else {
+        toast.error("Erreur lors de l'ajout à vos événements");
+      }
+    } catch (err) {
+      console.error(err);
       toast.error("Erreur lors de l'ajout à vos événements");
     }
   };
