@@ -6,6 +6,7 @@ import {
   Calendar,
   MapPin,
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -16,136 +17,191 @@ import tunisImage from "@/assets/tunis.jpg";
 import sousseImage from "@/assets/sousse.jpg";
 import djerbaImage from "@/assets/djerba.jpg";
 
+/* ===== Animation presets ===== */
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const stagger = {
+  visible: {
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
 const Home = () => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
       <main className="flex-1">
-        {/* ================= HERO SECTION ================= */}
-        <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0">
-            <img
-              src={heroImage}
-              alt="Tunisia"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-background" />
-          </div>
+        {/* ================= HERO ================= */}
+        <section className="relative min-h-[90vh] flex items-center">
+          <img
+            src={heroImage}
+            alt="Tunisia"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/45" />
 
-          <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              Bienvenue chez vous en Tunisie
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            transition={{ duration: 0.9 }}
+            className="relative container max-w-3xl text-white"
+          >
+            <span className="uppercase tracking-[0.3em] text-sm text-white/80">
+              Darna Tunisia
+            </span>
+
+            <h1 className="text-6xl font-light mt-6 leading-tight">
+              L’élégance du voyage,
+              <br />
+              <span className="font-semibold">l’âme de la Tunisie</span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-white/90">
-              Découvrez la magie méditerranéenne, entre histoire millénaire et traditions vivantes
+
+            <p className="mt-8 text-lg text-white/85">
+              Une sélection raffinée de destinations, de saveurs
+              et d’expériences culturelles authentiques.
             </p>
+
             <Link to="/destinations">
-              <Button size="lg" className="text-lg">
-                Explorer les destinations
-                <ArrowRight className="ml-2 h-5 w-5" />
+              <Button
+                size="lg"
+                className="mt-10 px-10 text-lg"
+              >
+                Explorer
+                <ArrowRight className="ml-3 h-5 w-5" />
               </Button>
             </Link>
-          </div>
+          </motion.div>
         </section>
 
-        {/* ================= VIDEO SECTION ================= */}
-        <section className="py-20 bg-muted/30">
-          <div className="container max-w-5xl text-center">
-            <h2 className="text-3xl font-bold mb-6">
-              Vivez l’expérience tunisienne
-            </h2>
-            <p className="text-muted-foreground mb-10 max-w-2xl mx-auto">
-              Plongez au cœur de la Tunisie à travers ses paysages, sa culture
-              et son art de vivre.
-            </p>
+        {/* ================= VIDEO ================= */}
+        <section className="py-32">
+          <motion.div
+            className="container grid lg:grid-cols-2 gap-20 items-center"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeUp}>
+              <h2 className="text-4xl font-light mb-6">
+                Une destination
+                <br />
+                <span className="font-semibold">à ressentir</span>
+              </h2>
+              <p className="text-muted-foreground text-lg leading-relaxed">
+                Chaque instant en Tunisie est une rencontre :
+                la lumière, les saveurs, les traditions et les lieux
+                façonnent une expérience unique et intemporelle.
+              </p>
+            </motion.div>
 
-            <div className="relative aspect-video rounded-xl overflow-hidden shadow-xl">
+            <motion.div
+              variants={fadeUp}
+              className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl"
+            >
               <iframe
-                src="https://www.youtube.com/embed/DMAaLIIRB38?si=a2TeMCxfAgRlpemv"
-                title="Tunisia Travel Video"
+                src="https://www.youtube.com/embed/DMAaLIIRB38"
+                title="Tunisia Experience"
                 className="absolute inset-0 w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
               />
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </section>
 
-        {/* ================= DESTINATIONS PREVIEW ================= */}
-        <section className="py-20">
-          <div className="container">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">
-                Destinations incontournables
-              </h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Des villes chargées d’histoire aux îles paradisiaques,
-                explorez la diversité tunisienne.
-              </p>
-            </div>
+        {/* ================= DESTINATIONS ================= */}
+        <section className="py-28 bg-muted/30">
+          <motion.div
+            className="container"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="text-4xl font-light text-center mb-16"
+            >
+              Destinations d’exception
+            </motion.h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <CityCard
-                name="Tunis"
-                image={tunisImage}
-                description="Capitale vibrante mêlant histoire et modernité."
-                id={1}
-              />
-              <CityCard
-                name="Sousse"
-                image={sousseImage}
-                description="La perle du Sahel et ses plages dorées."
-                id={2}
-              />
-              <CityCard
-                name="Djerba"
-                image={djerbaImage}
-                description="Île méditerranéenne aux mille palmiers."
-                id={3}
-              />
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              <motion.div variants={fadeUp}>
+                <CityCard
+                  id={1}
+                  name="Tunis"
+                  image={tunisImage}
+                  description="Capitale culturelle et contemporaine."
+                />
+              </motion.div>
 
-            <div className="text-center mt-12">
-              <Link to="/destinations">
-                <Button variant="outline" size="lg">
-                  Voir toutes les destinations
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+              <motion.div variants={fadeUp}>
+                <CityCard
+                  id={2}
+                  name="Sousse"
+                  image={sousseImage}
+                  description="Héritage méditerranéen et douceur de vivre."
+                />
+              </motion.div>
+
+              <motion.div variants={fadeUp}>
+                <CityCard
+                  id={3}
+                  name="Djerba"
+                  image={djerbaImage}
+                  description="Île de sérénité et de spiritualité."
+                />
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </section>
 
-        {/* ================= EXPERIENCE SECTION ================= */}
-        <section className="py-20 bg-muted/30">
-          <div className="container">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              <div className="p-6">
-                <UtensilsCrossed className="h-10 w-10 mx-auto mb-4 text-primary" />
-                <h3 className="text-xl font-semibold mb-2">Gastronomie</h3>
+        {/* ================= EXPERIENCE ================= */}
+        <section className="py-28">
+          <motion.div
+            className="container grid md:grid-cols-3 gap-14"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+          >
+            {[
+              {
+                icon: UtensilsCrossed,
+                title: "Gastronomie",
+                text: "Une cuisine d’exception, riche et généreuse.",
+              },
+              {
+                icon: Calendar,
+                title: "Événements",
+                text: "Moments culturels et festivités prestigieuses.",
+              },
+              {
+                icon: MapPin,
+                title: "Patrimoine",
+                text: "Un héritage millénaire classé et préservé.",
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                variants={fadeUp}
+                className="border rounded-2xl p-10 hover:shadow-xl transition"
+              >
+                <item.icon className="h-10 w-10 text-primary mb-6" />
+                <h3 className="text-xl font-semibold mb-4">
+                  {item.title}
+                </h3>
                 <p className="text-muted-foreground">
-                  Saveurs authentiques, recettes ancestrales et produits du terroir.
+                  {item.text}
                 </p>
-              </div>
-
-              <div className="p-6">
-                <Calendar className="h-10 w-10 mx-auto mb-4 text-primary" />
-                <h3 className="text-xl font-semibold mb-2">Événements</h3>
-                <p className="text-muted-foreground">
-                  Festivals, traditions et rendez-vous culturels toute l’année.
-                </p>
-              </div>
-
-              <div className="p-6">
-                <MapPin className="h-10 w-10 mx-auto mb-4 text-primary" />
-                <h3 className="text-xl font-semibold mb-2">Patrimoine</h3>
-                <p className="text-muted-foreground">
-                  Sites antiques, médinas classées et trésors historiques.
-                </p>
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </section>
       </main>
 
