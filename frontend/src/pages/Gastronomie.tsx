@@ -34,49 +34,60 @@ const Gastronomie = () => {
         setDishes(mapped);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         setError("Une erreur est survenue lors du chargement des plats.");
         setLoading(false);
       });
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-r from-accent to-accent-dark text-accent-foreground py-20">
-          <div className="container text-center">
-            <div className="inline-flex items-center justify-center p-3 bg-background/10 rounded-full mb-6">
-              <UtensilsCrossed className="h-8 w-8" />
-            </div>
-            <h1 className="text-5xl font-bold mb-6">Gastronomie Tunisienne</h1>
-            <p className="text-xl max-w-2xl mx-auto opacity-90">
-              Un voyage culinaire entre Méditerranée et Sahara, où chaque plat raconte une histoire
+        {/* ================= HERO ================= */}
+        <section className="relative py-32 overflow-hidden text-center">
+
+          <div className="absolute inset-0 bg-gradient-to-b from-[#f4f7fb] via-[#eaf2f8] to-background" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(15,76,117,0.14),transparent_60%)]" />
+
+          <div className="relative container">
+            <UtensilsCrossed className="h-10 w-10 mx-auto mb-6 text-sky-600" />
+            <h1 className="text-5xl font-light mb-6">
+              Gastronomie <span className="font-semibold">Tunisienne</span>
+            </h1>
+            <p className="max-w-2xl mx-auto text-muted-foreground text-lg">
+              Une cuisine d’âme, transmise de génération en génération,
+              entre terre, mer et soleil.
             </p>
           </div>
         </section>
 
-        {/* Introduction */}
-        <section className="py-12 bg-muted/30">
-          <div className="container max-w-4xl">
-            <div className="prose prose-lg mx-auto text-center">
-              <p className="text-lg text-muted-foreground">
-                La cuisine tunisienne est un savoureux mélange d'influences berbères, arabes, turques,
-                italiennes et françaises. Généreuse en saveurs et en couleurs, elle fait la part belle
-                aux épices (cumin, carvi, coriandre, harissa), à l'huile d'olive, aux légumes frais et
-                aux produits de la mer.
-              </p>
+
+        {/* ================= SEPARATOR + QUOTE ================= */}
+        <section className="py-24">
+          <div className="container flex flex-col items-center text-muted-foreground/80">
+            <div className="flex items-center gap-6 mb-6">
+              <span className="h-px w-24 bg-current" />
+              <span className="uppercase tracking-[0.3em] text-xs">
+                Héritage & Saveurs
+              </span>
+              <span className="h-px w-24 bg-current" />
             </div>
+
+            <p className="italic text-center max-w-xl text-sm">
+              “Chaque plat est une mémoire,
+              chaque saveur raconte une terre.”
+            </p>
           </div>
         </section>
 
-        {/* Dishes Grid */}
-        <section className="py-20">
+        {/* ================= PLATS (INTOUCHABLE) ================= */}
+        <section className="pb-32">
           <div className="container">
-            <h2 className="text-3xl font-bold mb-12 text-center">Plats Typiques & Restaurants</h2>
+            <h2 className="text-4xl font-light text-center mb-24 tracking-[0.15em] uppercase">
+              Plats emblématiques
+            </h2>
 
             {loading && (
               <p className="text-center text-lg">Chargement des plats...</p>
@@ -87,7 +98,9 @@ const Gastronomie = () => {
             )}
 
             {!loading && !error && dishes.length === 0 && (
-              <p className="text-center text-lg">Aucun plat trouvé pour le moment.</p>
+              <p className="text-center text-lg">
+                Aucun plat trouvé pour le moment.
+              </p>
             )}
 
             {!loading && !error && dishes.length > 0 && (
@@ -104,16 +117,6 @@ const Gastronomie = () => {
                 ))}
               </div>
             )}
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-16 bg-primary text-primary-foreground">
-          <div className="container text-center">
-            <h2 className="text-3xl font-bold mb-4">Envie de découvrir plus ?</h2>
-            <p className="text-lg mb-6 opacity-90">
-              Explorez nos destinations pour trouver les meilleurs restaurants locaux
-            </p>
           </div>
         </section>
       </main>

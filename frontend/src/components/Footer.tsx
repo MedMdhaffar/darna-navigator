@@ -50,7 +50,8 @@ const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Notre mission
+                  <Link to="/mission">Notre mission</Link>
+
                 </a>
               </li>
               <li>
@@ -77,7 +78,7 @@ const Footer = () => {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center space-x-2 text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <span>mohamed.mdhaffar@supcom.tn</span>
+                <span>darna.tunisie@gmail.com</span>
               </li>
               <li className="flex items-center space-x-2 text-muted-foreground">
                 <Phone className="h-4 w-4" />

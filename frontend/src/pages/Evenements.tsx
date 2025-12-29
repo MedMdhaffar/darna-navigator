@@ -47,12 +47,21 @@ const Evenements = () => {
       .then((data: EventItem[]) => {
         const mapped = data.map((item) => {
           const dateObj = new Date(item.date);
-          const monthKey = dateObj.toString() === "Invalid Date"
-            ? ""
-            : dateObj.toLocaleString("fr-FR", { month: "long" }).toLowerCase();
-          const dateLabel = dateObj.toString() === "Invalid Date"
-            ? item.date
-            : dateObj.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+          const monthKey =
+            dateObj.toString() === "Invalid Date"
+              ? ""
+              : dateObj
+                .toLocaleString("fr-FR", { month: "long" })
+                .toLowerCase();
+
+          const dateLabel =
+            dateObj.toString() === "Invalid Date"
+              ? item.date
+              : dateObj.toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              });
 
           return {
             id: item.id,
@@ -62,21 +71,22 @@ const Evenements = () => {
             description: item.short_description,
             cityKey: item.location_name?.toLowerCase() || "",
             monthKey,
-          } as EventViewModel;
+          };
         });
+
         setEvents(mapped);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         setError("Une erreur est survenue lors du chargement des événements.");
         setLoading(false);
       });
   }, []);
 
   const cityOptions = useMemo(() => {
-    const names = Array.from(new Set(events.map((e) => e.cityKey).filter(Boolean)));
-    return names;
+    return Array.from(
+      new Set(events.map((e) => e.cityKey).filter(Boolean))
+    );
   }, [events]);
 
   const filteredEvents = events.filter((event) => {
@@ -86,35 +96,61 @@ const Evenements = () => {
   });
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-r from-secondary to-secondary/80 text-secondary-foreground py-20">
-          <div className="container text-center">
-            <div className="inline-flex items-center justify-center p-3 bg-white/10 rounded-full mb-6">
-              <Calendar className="h-8 w-8" />
-            </div>
-            <h1 className="text-5xl font-bold mb-6">Événements & Festivals</h1>
-            <p className="text-xl max-w-2xl mx-auto opacity-90">
-              Vivez l'effervescence culturelle de la Tunisie toute l'année
+        {/* ================= HERO ================= */}
+        <section className="relative py-32 overflow-hidden text-center">
+          {/* Fond bleu méditerranéen */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#f4f7fb] via-[#eaf2f8] to-background" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(15,76,117,0.14),transparent_60%)]" />
+
+          <div className="relative container">
+            <Calendar className="h-10 w-10 mx-auto mb-6 text-sky-600" />
+            <h1 className="text-5xl font-light mb-6">
+              Événements <span className="font-semibold">Culturels</span>
+            </h1>
+            <p className="max-w-2xl mx-auto text-muted-foreground text-lg">
+              Festivals, traditions et rendez-vous culturels
+              qui rythment la Tunisie tout au long de l’année.
             </p>
           </div>
         </section>
 
-        {/* Filters */}
-        <section className="py-8 bg-muted/30 border-b">
+
+        {/* ================= SEPARATOR + QUOTE ================= */}
+        <section className="py-24">
+          <div className="container flex flex-col items-center text-muted-foreground/80">
+            <div className="flex items-center gap-6 mb-6">
+              <span className="h-px w-24 bg-current" />
+              <span className="uppercase tracking-[0.3em] text-xs">
+                Temps & Traditions
+              </span>
+              <span className="h-px w-24 bg-current" />
+            </div>
+
+            <p className="italic text-center max-w-xl text-sm">
+              “Chaque événement est une rencontre,
+              chaque date une célébration.”
+            </p>
+          </div>
+        </section>
+
+        {/* ================= FILTERS ================= */}
+        <section className="pb-16">
           <div className="container">
-            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Filter className="h-5 w-5 text-muted-foreground" />
-                <span className="font-medium">Filtrer par :</span>
+            <div className="flex flex-col sm:flex-row gap-6 items-center justify-center">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Filter className="h-5 w-5" />
+                <span className="uppercase tracking-widest text-xs">
+                  Filtres
+                </span>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Select value={filterCity} onValueChange={setFilterCity}>
-                  <SelectTrigger className="w-full sm:w-[200px]">
+                  <SelectTrigger className="w-[200px]">
                     <SelectValue placeholder="Toutes les villes" />
                   </SelectTrigger>
                   <SelectContent>
@@ -128,12 +164,14 @@ const Evenements = () => {
                 </Select>
 
                 <Select value={filterMonth} onValueChange={setFilterMonth}>
-                  <SelectTrigger className="w-full sm:w-[200px]">
+                  <SelectTrigger className="w-[200px]">
                     <SelectValue placeholder="Tous les mois" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tous les mois</SelectItem>
-                    {Array.from(new Set(events.map((e) => e.monthKey).filter(Boolean))).map((month) => (
+                    {Array.from(
+                      new Set(events.map((e) => e.monthKey).filter(Boolean))
+                    ).map((month) => (
                       <SelectItem key={month} value={month}>
                         {month.charAt(0).toUpperCase() + month.slice(1)}
                       </SelectItem>
@@ -157,43 +195,46 @@ const Evenements = () => {
           </div>
         </section>
 
-        {/* Events Grid */}
-        <section className="py-20">
+        {/* ================= EVENTS (INTOUCHABLE) ================= */}
+        <section className="pb-32">
           <div className="container">
+            <h2 className="text-4xl font-light text-center mb-24 tracking-[0.15em] uppercase">
+              Événements à venir
+            </h2>
+
             {loading && (
-              <p className="text-center text-lg">Chargement des événements...</p>
+              <p className="text-center text-lg">
+                Chargement des événements...
+              </p>
             )}
 
             {error && !loading && (
-              <div className="text-center py-10 text-destructive text-lg">
+              <p className="text-center text-lg text-destructive">
                 {error}
+              </p>
+            )}
+
+            {!loading && !error && filteredEvents.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredEvents.map((event) => (
+                  <EventCard
+                    key={event.id}
+                    id={event.id}
+                    title={event.title}
+                    date={event.date}
+                    location={event.location}
+                    description={event.description}
+                  />
+                ))}
               </div>
             )}
 
-            {!loading && !error && filteredEvents.length > 0 ? (
-              <>
-                <p className="text-muted-foreground mb-8">
-                  {filteredEvents.length} événement{filteredEvents.length > 1 ? 's' : ''} trouvé{filteredEvents.length > 1 ? 's' : ''}
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredEvents.map((event) => (
-                    <EventCard
-                      key={event.id}
-                      id={event.id}
-                      title={event.title}
-                      date={event.date}
-                      location={event.location}
-                      description={event.description}
-                    />
-                  ))}
-                </div>
-              </>
-            ) : null}
-
             {!loading && !error && filteredEvents.length === 0 && (
               <div className="text-center py-20">
-                <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-xl font-semibold mb-2">Aucun événement trouvé</h3>
+                <Calendar className="h-16 w-16 mx-auto mb-6 text-muted-foreground" />
+                <h3 className="text-xl font-semibold mb-2">
+                  Aucun événement trouvé
+                </h3>
                 <p className="text-muted-foreground mb-6">
                   Essayez de modifier vos filtres de recherche
                 </p>

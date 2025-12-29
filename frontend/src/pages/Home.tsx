@@ -67,10 +67,9 @@ const Home = () => {
             </p>
 
             <Link to="/destinations">
-              <Button
-                size="lg"
-                className="mt-10 px-10 text-lg"
-              >
+              <Button size="lg" className="mt-10 px-10 text-lg
+              bg-gradient-to-r from-sky-600 to-blue-700 
+              hover:opacity-90 transition" >
                 Explorer
                 <ArrowRight className="ml-3 h-5 w-5" />
               </Button>
@@ -114,8 +113,87 @@ const Home = () => {
           </motion.div>
         </section>
 
+        {/* ================= INTENTION DU VOYAGEUR ================= */}
+        <section className="relative py-32 overflow-hidden">
+
+          <div className="absolute inset-0 bg-gradient-to-b from-[#f4f7fb] via-[#eaf2f8] to-background" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_15%,rgba(15,76,117,0.12),transparent_60%)]" />
+
+          <motion.div
+            className="relative container max-w-4xl text-center"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="text-4xl font-light mb-10"
+            >
+              Pourquoi venir en <span className="font-semibold">Tunisie</span> ?
+            </motion.h2>
+
+            <motion.p
+              variants={fadeUp}
+              className="text-muted-foreground text-lg mb-16 leading-relaxed"
+            >
+              La Tunisie ne se visite pas pour une seule raison.
+              Elle se découvre différemment selon ce que l’on cherche,
+              ce que l’on ressent, ce que l’on souhaite vivre.
+            </motion.p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 text-left">
+              {[
+                {
+                  title: "Détente",
+                  text: "Pour la douceur du littoral, la lumière méditerranéenne et le rythme apaisant des journées.",
+                },
+                {
+                  title: "Culture",
+                  text: "Pour un patrimoine millénaire, des médinas vivantes et des sites classés à ciel ouvert.",
+                },
+                {
+                  title: "Gastronomie",
+                  text: "Pour une cuisine sincère, généreuse, façonnée par la terre, la mer et les traditions.",
+                },
+                {
+                  title: "Festivals & traditions",
+                  text: "Pour vibrer au rythme des événements, des musiques et des célébrations locales.",
+                },
+                {
+                  title: "Nature & évasion",
+                  text: "Pour les contrastes uniques entre oasis, désert, montagnes et horizons infinis.",
+                },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  variants={fadeUp}
+                  className="border rounded-2xl p-8 bg-background/80 backdrop-blur-sm"
+                >
+                  <h3 className="text-xl font-semibold mb-3">
+                    {item.title}
+                  </h3>
+                  <p className="text-muted-foreground">
+                    {item.text}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.p
+              variants={fadeUp}
+              className="mt-20 text-sm text-muted-foreground italic"
+            >
+              Quelle que soit votre intention, la Tunisie vous offre
+              une expérience à votre mesure.
+            </motion.p>
+          </motion.div>
+        </section>
+
+
+
         {/* ================= DESTINATIONS ================= */}
-        <section className="py-28 bg-muted/30">
+        <section className="py-28">
           <motion.div
             className="container"
             initial="hidden"
@@ -158,49 +236,6 @@ const Home = () => {
                 />
               </motion.div>
             </div>
-          </motion.div>
-        </section>
-
-        {/* ================= EXPERIENCE ================= */}
-        <section className="py-28">
-          <motion.div
-            className="container grid md:grid-cols-3 gap-14"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-          >
-            {[
-              {
-                icon: UtensilsCrossed,
-                title: "Gastronomie",
-                text: "Une cuisine d’exception, riche et généreuse.",
-              },
-              {
-                icon: Calendar,
-                title: "Événements",
-                text: "Moments culturels et festivités prestigieuses.",
-              },
-              {
-                icon: MapPin,
-                title: "Patrimoine",
-                text: "Un héritage millénaire classé et préservé.",
-              },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUp}
-                className="border rounded-2xl p-10 hover:shadow-xl transition"
-              >
-                <item.icon className="h-10 w-10 text-primary mb-6" />
-                <h3 className="text-xl font-semibold mb-4">
-                  {item.title}
-                </h3>
-                <p className="text-muted-foreground">
-                  {item.text}
-                </p>
-              </motion.div>
-            ))}
           </motion.div>
         </section>
       </main>

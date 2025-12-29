@@ -77,7 +77,9 @@ const EventCard = ({ id, title, date, location, description, image }: EventCardP
         <p className="text-sm text-muted-foreground">{description}</p>
         <Button
           onClick={handleJoinEvent}
-          className="w-full"
+          className="w-full
+          bg-gradient-to-r from-sky-600 to-blue-700 
+              hover:opacity-90 transition"
           size="sm"
         >
           Je veux y aller
