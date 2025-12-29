@@ -71,10 +71,10 @@ const CityDetails = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${parsedTokens.access}`
                 },
                 body: JSON.stringify(payload)
             });
+            console.log('Add to favorites payload:', payload); // Debug log
             if (response.ok) {
                 toast.success(`${city.name} ajoutée à vos favoris !`);
                 setTimeout(() => navigate("/profil"), 1000);

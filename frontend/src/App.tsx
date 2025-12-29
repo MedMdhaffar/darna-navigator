@@ -15,6 +15,7 @@ import Logout from "./pages/Logout";
 import NotFound from "./pages/NotFound";
 import Verify from "./pages/Verify";
 import Mission from "@/pages/Mission";
+import Team from "@/pages/Team";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/verify" element={<Verify />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/mission" element={<Mission />} />
+          <Route path="/team" element={<Team />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
