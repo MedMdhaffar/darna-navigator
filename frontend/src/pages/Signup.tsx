@@ -48,7 +48,7 @@ const Signup = () => {
     try {
       const response = await fetch("http://localhost:8000/accounts/signup/", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: formData.name.trim(),
           email: formData.email.toLowerCase().trim(),
@@ -59,7 +59,22 @@ const Signup = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.error || "Erreur lors de la création du compte");
+        // Log détaillé pour le débogage
+        console.error("Backend error:", {
+          status: response.status,
+          statusText: response.statusText,
+          data: data,
+        });
+
+        // Afficher le message d'erreur du backend ou un message générique
+        const errorMessage =
+          data.error ||
+          data.message ||
+          data.detail ||
+          Object.values(data).join(", ") ||
+          "Erreur lors de la création du compte";
+
+        toast.error(errorMessage);
         return;
       }
 
@@ -70,8 +85,10 @@ const Signup = () => {
       setTimeout(() => navigate("/verify"), 1000);
 
     } catch (error) {
-      console.error("Error:", error);
-      toast.error("Erreur réseau. Réessayez.");
+      console.error("Network or parsing error:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Erreur réseau. Réessayez.";
+      toast.error(errorMessage);
     }
   };
 
